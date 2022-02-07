@@ -3,12 +3,15 @@
 const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
 const mongooseDelete = require('mongoose-delete');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
+
 
 const Schema = mongoose.Schema;
 
 
 const CourseSchema = new Schema(
     {
+        id: { type: Number },
         name: { type: String, maxlength: 255, required: true },
         desc: { type: String, maxlength: 600, },
         image: { type: String, maxlength: 255 },
@@ -28,12 +31,13 @@ CourseSchema.query.sortable = function (req) {
         return this.sort({
             [req.query.column]: isValidType ? req.query.type : 'desc',
         });
-
-        return this;
     }
+    return this;
+
 }
 
 mongoose.plugin(slug);
+CourseSchema.plugin(AutoIncrement);
 CourseSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
 
 module.exports = mongoose.model('Course', CourseSchema);

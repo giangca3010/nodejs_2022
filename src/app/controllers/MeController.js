@@ -6,7 +6,6 @@ class MeController {
 
   storedCourse(req, res, next) {
 
-
     Promise.all([
       Course.find({}).sortable(req),
       Course.countDocumentsDeleted({})
@@ -19,6 +18,24 @@ class MeController {
       )
       .catch(next)
 
+
+    // let coursesQuery = Course.find({});
+
+    // if (req.query.hasOwnProperty('_sort')) {
+    //   const isValidType = ['asc', 'desc'].includes(req.query.type);
+    //   coursesQuery = coursesQuery.sort({
+    //     [req.query.column]: isValidType ? req.query.type : 'desc'
+    //   });
+    // }
+
+    // Promise.all([coursesQuery.find({}), Course.countDocumentsDeleted({})])
+    //   .then(([courses, deletedCount]) =>
+    //     res.render('me/store-course', {
+    //       courses: multipleMongooseToObject(courses),
+    //       deletedCount,
+    //     })
+    //   )
+    //   .catch(next)
   }
 
   trashCourse(req, res, next) {
