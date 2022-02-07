@@ -1,11 +1,13 @@
+
+
 const mongoose = require('mongoose');
 const slug = require('mongoose-slug-generator');
-mongoose.plugin(slug);
+const mongooseDelete = require('mongoose-delete');
 
 const Schema = mongoose.Schema;
 
 
-const Course = new Schema(
+const CourseSchema = new Schema(
     {
         name: { type: String, maxlength: 255, required: true },
         desc: { type: String, maxlength: 600, },
@@ -20,4 +22,18 @@ const Course = new Schema(
     }
 );
 
-module.exports = mongoose.model('Course', Course);
+CourseSchema.query.sortable = function (req) {
+    if (req.query.hasOwnProperty('_sort')) {
+        const isValidType = ['asc', 'desc'].includes(req.query.type);
+        return this.sort({
+            [req.query.column]: isValidType ? req.query.type : 'desc',
+        });
+
+        return this;
+    }
+}
+
+mongoose.plugin(slug);
+CourseSchema.plugin(mongooseDelete, { overrideMethods: 'all' });
+
+module.exports = mongoose.model('Course', CourseSchema);

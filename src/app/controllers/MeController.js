@@ -2,17 +2,34 @@ const Course = require("../models/Course");
 const { multipleMongooseToObject } = require('../../ultil/mongoose');
 
 class MeController {
-  // [GET] /news
+
+
   storedCourse(req, res, next) {
-    Course.find({})
-    .then(courses =>res.render('me/store-course', {courses: multipleMongooseToObject(courses)}))
-    .catch(next);
+
+
+    Promise.all([
+      Course.find({}).sortable(req),
+      Course.countDocumentsDeleted({})
+    ])
+      .then(([courses, deletedCount]) =>
+        res.render('me/store-course', {
+          courses: multipleMongooseToObject(courses),
+          deletedCount,
+        })
+      )
+      .catch(next)
+
   }
 
-  //[GET] /me/storedCourse
-  // show(req, res) {
-  //   res.send('News Detail!!!');
-  // }
+  trashCourse(req, res, next) {
+
+
+    Course.findDeleted({})
+      .then(courses => res.render('me/trash-course', { courses: multipleMongooseToObject(courses) }))
+      .catch(next);
+  }
 }
+
+
 
 module.exports = new MeController();

@@ -1,14 +1,17 @@
 const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
-const methodOverride = require('method-override')
+const methodOverride = require('method-override');
 const hbs = require('express-handlebars');
+const sortMiddleware = require('./app/middlewares/sortMiddleware');
+
 const app = express();
 const port = 8000;
 
 const route = require('./routes/indexRoute');
 const db = require('./config/db');
 const { sum } = require('lodash');
+const { helpers } = require('handlebars');
 
 //connect db
 db.connect();
@@ -24,7 +27,7 @@ app.use(express.json());
 
 app.use(methodOverride('_method'))
 
-
+app.use(sortMiddleware);
 
 // HTTP logger
 // app.use(morgan('combined')))
@@ -34,9 +37,7 @@ app.engine(
   'hbs',
   hbs.engine({
     extname: '.hbs',
-    helpers: {
-      sum: (a, b) => a + b,
-    }
+    helpers: require('./app/helpers/handlebars'),
   }),
 );
 app.set('view engine', 'hbs');
